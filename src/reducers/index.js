@@ -1,4 +1,5 @@
 import {combineReducers} from 'redux'
-import itemsManipulation from './itemsManipulation'
+import items from './items'
+import editItem from './editItem'
 
-export default combineReducers({itemsManipulation})
+export default combineReducers({items, editItem})

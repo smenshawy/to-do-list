@@ -2,30 +2,27 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import './item.css'
 import {connect} from 'react-redux'
-import {editItem} from './actions'
+import {editItem, deleteItem} from './actions'
 
 
 class Item extends Component{
     constructor(props){
         super(props)
-        this.state = {
-            action: '',
-            done: false,
-        }
         
         this._editItem = this._editItem.bind(this)
+        this._deleteItem = this._deleteItem.bind(this)
         this._handleChange = this._handleChange.bind(this)
     }
 
-    componentWillReceiveProps(nextProps){
-        if(this.props.id === nextProps.updatedItemId){
-            this.setState({action: nextProps.updatedItemAction, done: nextProps.updatedItemDone})
-        }
+    _editItem(e){
+        const { id } = this.props
+        this.props.onEditItem(id)
+        e.stopPropagation()
     }
 
-    _editItem(e){
-        const {action, done} = this.state
-        this.props.onEditItem({id: this.props.id, action, done})
+    _deleteItem(e){
+        const { id } = this.props
+        this.props.onDeleteItem(id)
         e.stopPropagation()
     }
     _handleChange(stateKey, type, event) {
@@ -41,34 +38,25 @@ class Item extends Component{
     }
 
     render(){
-        const {action, done} = this.state
+        const {id, action, done, x, y} = this.props
         return(
-            <div>
-                <div onDoubleClick={e=>{this._editItem(e)}} className={`item ${done? 'item--done': ''}`} 
-                    style={{left: this.props.x, top: this.props.y}}>
-                    {action}
-                </div>
+            <div onDoubleClick={this._editItem} className='item'    style={{left: x, top: y}}>
+                <span onClick={this._deleteItem}>x</span>
+                <div className={done && 'item__content--done'}>{action}</div>
             </div>
         )
     }
 }
 
-const mapStateToProps = state => {
-    return{
-        updatedItemId: state.itemsManipulation.id,
-        updatedItemAction: state.itemsManipulation.action,
-        updatedItemDone: state.itemsManipulation.done,
-    }
-}
 
 const mapDispatchToProps = dispatch => {
     return {
-        onEditItem: item => {
-            dispatch(editItem(item))
-        }
+        onEditItem:itemId => { dispatch(editItem(itemId))},
+        onDeleteItem: itemId => { dispatch(deleteItem(itemId))},
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Item)
+
+export default connect(null, mapDispatchToProps)(Item)
 
 Item.propTypes = {
     id: PropTypes.number.isRequired,

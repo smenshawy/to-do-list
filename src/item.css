@@ -6,8 +6,16 @@
     padding: 10px;
     cursor: pointer;
     position: absolute;
+    display: flex;
+    flex-direction: column;
 }
 
-.item--done{
+.item span:first-child{
+    align-self: flex-end;
+    color: red;
+
+}
+
+.item__content--done{
     text-decoration: line-through;
 }

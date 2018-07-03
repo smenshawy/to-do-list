@@ -3,43 +3,31 @@ import Item from './item'
 import Overlay from './overlay'
 import './board.css'
 import {connect} from 'react-redux'
+import {addItem} from './actions'
 
 class Board extends Component{
 
     constructor(props){
         super(props)
-        this.state = {
-            items: []
-        }
 
-        this._createItem = this._createItem.bind(this);
+        this._addItem = this._addItem.bind(this);
     }
 
-    _createItem(e){
-        console.log(Date.now())
-        const newItem = {
-            id: Date.now(),
-            x: e.nativeEvent.clientX, 
-            y: e.nativeEvent.clientY,
-        }
-
-
-        this.setState(prevState => ({
-            items : [...prevState.items, newItem]
-        }))
+    _addItem(e){
+        this.props.addItem(e.nativeEvent.clientX, e.nativeEvent.clientY)
     }
 
     render(){
-        const { items } = this.state;
+        const { items, editMode} = this.props;
         return(
-            <div className='board' onDoubleClick={this._createItem}>
-                {items.map(({id, action, x, y}) => {
+            <div className='board' onDoubleClick={this._addItem}>
+                {items.map(({id, action, done, x, y}) => {
                     return (
-                        <Item key={id} id={id} x={x} y={y}/>
+                        <Item key={id} id={id} action={action} done={done} x={x} y={y}/>
                     )
                 })}
 
-                {this.props.editMode && <Overlay/>}
+                {editMode && <Overlay/>}
             </div>
         )
     }
@@ -47,8 +35,17 @@ class Board extends Component{
 
 const mapStateToProps = state => {
     return {
-        editMode: state.itemsManipulation.editMode
+        items: state.items,
+        editMode: state.editItem.editMode
     }
 }
 
-export default connect(mapStateToProps)(Board)
+const mapDispatchToProps = dispatch => {
+    return{
+        addItem: (x, y) => {
+            dispatch(addItem(x, y))
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Board)

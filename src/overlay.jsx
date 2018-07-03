@@ -6,9 +6,10 @@ import './overlay.css'
 class Overlay extends Component{
     constructor(props){
         super(props)
+        const {itemToEdit} = props
         this.state = {
-            action: props.action,
-            done: props.done,
+            action: itemToEdit.action,
+            done: itemToEdit.done,
         }
         
         this._handleChange = this._handleChange.bind(this)
@@ -27,6 +28,7 @@ class Overlay extends Component{
 
     render(){
         const {action, done} = this.state
+        const {itemToEdit, onUpdateClick} = this.props
         return (
             <div className='overlay' onDoubleClick={e=>{e.stopPropagation()}}>
                 <form onSubmit={this.handleSubmit} className='overlay__form'>
@@ -38,7 +40,7 @@ class Overlay extends Component{
                         Done:
                         <input type="checkbox" name='done' checked={done} onChange={e=>this._handleChange('done', 'checkbox', e)} />
                     </label>
-                    <input type="submit" value="update" onClick={e=> this.props.onUpdateClick(this.props.id, action, done)}/>
+                    <input type="submit" value="update" onClick={e=> onUpdateClick(itemToEdit.id, action, done)}/>
                 </form>
             </div>
         )
@@ -47,9 +49,7 @@ class Overlay extends Component{
 
 const mapStateToProps = state =>{
     return {
-        id: state.itemsManipulation.id,
-        action: state.itemsManipulation.action,
-        done: state.itemsManipulation.done,
+        itemToEdit: state.items.find(i => i.id === state.editItem.id)
     }
 }
 
